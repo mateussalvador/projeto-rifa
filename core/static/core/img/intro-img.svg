@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="1024"
+   viewBox="0 0 1024 1024"
+   width="1024"
+   fill="#e8eaed"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="cash.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   inkscape:export-filename="images\cash.png"
+   inkscape:export-xdpi="131.25"
+   inkscape:export-ydpi="131.25"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="0.32501132"
+     inkscape:cx="144.61035"
+     inkscape:cy="-10.768856"
+     inkscape:window-width="1920"
+     inkscape:window-height="1051"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g1" />
+  <g
+     id="g1"
+     inkscape:label="graphics">
+    <rect
+       style="fill:#158741;fill-rule:evenodd;paint-order:fill markers stroke;fill-opacity:1"
+       id="rect1"
+       width="1024"
+       height="1024"
+       x="0"
+       y="0"
+       inkscape:label="background" />
+    <path
+       d="M 600,556 Q 545,556 506.5,517.5 468,479 468,424 468,369 506.5,330.5 545,292 600,292 q 55,0 93.5,38.5 Q 732,369 732,424 732,479 693.5,517.5 655,556 600,556 Z M 292,688 Q 255.7,688 229.85,662.15 204,636.3 204,600 V 248 q 0,-36.3 25.85,-62.15 Q 255.7,160 292,160 h 616 q 36.3,0 62.15,25.85 Q 996,211.7 996,248 v 352 q 0,36.3 -25.85,62.15 Q 944.3,688 908,688 Z m 88,-88 h 440 q 0,-36.3 25.85,-62.15 Q 871.7,512 908,512 V 336 Q 871.7,336 845.85,310.15 820,284.3 820,248 H 380 q 0,36.3 -25.85,62.15 Q 328.3,336 292,336 v 176 q 36.3,0 62.15,25.85 Q 380,563.7 380,600 Z M 864,864 H 116 Q 79.7,864 53.85,838.15 28,812.3 28,776 V 292 h 88 V 776 H 864 Z M 292,600 V 248 Z"
+       id="path1"
+       style="stroke-width:1.1;fill:#89edb0;fill-opacity:1"
+       inkscape:label="cash" />
+  </g>
+</svg>
