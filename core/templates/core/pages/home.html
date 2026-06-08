@@ -2,33 +2,12 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <link rel="shortcut icon" href="{% static 'core/img/money.svg' %}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rifando | Plataforma Digital de Gestão de Rifas</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'core/css/style.css'%}">
+  {% include 'core/partials/head.html' %}
 </head>
 <body>
   {% include 'core/partials/header.html' %}
-  <section class="intro-bg">
-    <div class="intro container">
-      <div class="intro-text">
-        <h1>Crie e venda <span>rifas online</span> em poucos dias</h1>
-        <p>Transforme suas ideias em rifas digitais com praticidade e rapidez. Em apenas alguns cliques, você coloca sua rifa no ar e começa a vender.</p>
-      </div>
-      <div class="intro-img">
-        <img src="{% static 'core/img/money-2.jpg' %}" alt="">
-      </div>
-    </div>
-  </section>
+  {% include 'core/partials/intro.html' %}
+  {% include 'core/partials/lista_rifas.html' %}
 </body>
 </html>

@@ -1,0 +1,17 @@
+<section class="lista-rifas-bg container">
+    <div class="lista-rifas">
+        {% for rifa in rifas %}
+        
+        <div class="rifa">
+            <h2 class="titulo-rifa">{{rifa.titulo}}</h2>
+            <p class="descricao">{{rifa.descricao}}</p>
+            <div class="autor-e-valor">
+                <span class="valor">R$ {{rifa.valor}}</span>
+                <span class="autor">{{rifa.autor}}</span>
+            </div>
+            <img src="{{rifa.cover.url}}" alt="">
+            <a class="btn" href="">Ver mais</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>

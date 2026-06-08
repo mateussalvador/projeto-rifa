@@ -1,9 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from .models import Rifa
 
 def home(request):
-    dados = {'nome': 'Mateus Salvador', 'profissao': 'Desenvolvedor Python e Analista de Dados'}
-    return render(request, 'core/pages/home.html', dados)
+    return render(request, 'core/pages/home.html', context={
+        'rifas': Rifa.objects.all().order_by('-id'),
+    })
 
 def sobre(request):
     html = '''

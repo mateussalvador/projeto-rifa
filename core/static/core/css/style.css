@@ -35,7 +35,7 @@ img {
 }
 
 .header-bg {
-  background-color: var(--verde-1);
+  background-color: var(--verde-2);
 }
 
 .header {
@@ -83,7 +83,7 @@ img {
 
 
 .intro-bg {
-  background-color: var(--verde-4);
+  background-color: var(--preto);
 }
 
 .intro {
@@ -121,4 +121,57 @@ img {
 
 .intro-img img {
   height: 400px;
+}
+
+.lista-rifas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  grid-auto-rows: minmax(250px, 1fr);
+}
+
+.rifa {
+  padding: 20px;
+  background-color: var(--cinza);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+}
+
+
+.rifa .autor, .rifa .valor {
+  background-color: var(--verde-1);
+  padding: 5px 10px;
+  border-radius: 4px;
+  display: inline-block;
+  color: var(--preto);
+  font-weight: bold;
+  text-transform: capitalize;  
+}
+
+.rifa .titulo-rifa {
+  font-size: 2.5rem;
+  color: var(--verde-4);
+}
+
+.rifa img {
+  display: block;
+  max-width: 100%;
+  height: 300px;
+}
+
+
+
+.btn {
+  background-color: var(--verde-4);
+  color: var(--branco);
+  text-align: center;
+  font-size: 2rem;
+  padding: 5px 10px;
+  border-radius: 4px;
+  align-self: stretch;
 }

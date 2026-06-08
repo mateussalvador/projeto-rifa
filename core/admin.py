@@ -1,3 +1,8 @@
 from django.contrib import admin
+from core.models import Rifa
 
-# Register your models here.
+class RifaAdmin(admin.ModelAdmin):
+    ...
+
+
+admin.site.register(Rifa, RifaAdmin)
