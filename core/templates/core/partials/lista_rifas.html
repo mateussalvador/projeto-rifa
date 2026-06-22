@@ -5,7 +5,7 @@
     <div class="rifa-card" style="background: #fff; border: 1px solid #e9ecef; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.02); display: flex; flex-direction: column;">
       
       <!-- Imagem de Capa da Rifa -->
-      <div class="rifa-img-container" style="position: relative; width: 100%; height: 200px; overflow: hidden; background-color: #eee;">
+      <div class="rifa-img-container" >
         {% if rifa.cover %}
           <img src="{{ rifa.cover.url }}" alt="{{ rifa.titulo }}" style="width: 100%; height: 100%; object-fit: cover;">
         {% else %}
@@ -13,27 +13,26 @@
         {% endif %}
         
         <!-- Badge Dinâmico de Status por cima da Imagem -->
-        <span style="position: absolute; top: 12px; left: 12px; padding: 5px 12px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-          {% if rifa.finalizada %} background-color: #dc3545; {% else %} background-color: #28a745; {% endif %}">
+        <span>
           {% if rifa.finalizada %} 🔒 Encerrada {% else %} 🟢 Aberta {% endif %}
         </span>
       </div>
 
       <!-- Conteúdo Informativo do Card -->
-      <div class="rifa-content" style="padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+      <div class="rifa-content">
         <div>
-          <h3 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: #333;">{{ rifa.titulo }}</h3>
-          <p style="font-size: 1.3rem; color: #666; margin-bottom: 15px; line-height: 1.4;">{{ rifa.descricao|truncatewords:15 }}</p>
+          <h3>{{ rifa.titulo }}</h3>
+          <p>{{ rifa.descricao|truncatewords:15 }}</p>
         </div>
 
         <div>
           <!-- Data Estimada ou Oficial do Sorteio -->
-          <div style="background-color: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 15px; border-left: 3px solid #6f42c1; font-size: 1.2rem; color: #495057;">
+          <div>
             📅 <strong>Data do Sorteio:</strong> 
             {% if rifa.data_sorteio %}
               {{ rifa.data_sorteio|date:"d/m/Y \à\s H:i" }}
             {% else %}
-              <span style="color: #888; font-style: italic;">A definir pelo organizador</span>
+              <span>A definir pelo organizador</span>
             {% endif %}
           </div>
 
@@ -55,14 +54,3 @@
     </div>
   {% endfor %}
 </div>
-
-<!-- Estilização rápida da Grid Responsiva caso não possua no style.css -->
-<style>
-  .rifas-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
-    margin-top: 30px;
-    margin-bottom: 50px;
-  }
-</style>

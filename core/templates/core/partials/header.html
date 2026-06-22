@@ -1,19 +1,251 @@
-<header class="header-bg">
-  <div class="header container">  
-    <a class="logo" href="{% url 'home' %}">Rifando</a>
-    <div class="acesso">
-      {% if user.is_authenticated %}
-        <span style="align-self: center; font-weight: bold; margin-right: 15px; font-size: 1.6rem;">Olá, {{ user.username }}</span>
-        
-        <a href="{% url 'meu_painel' %}" style="margin-right: 10px;">Meus Sorteios</a>
-        <a href="{% url 'gerenciar_comprovantes' %}" style="margin-right: 15px; color: #fff3cd; font-weight: 500;">Validar PIX</a>
-        
-        <a href="{% url 'criar_rifa' %}" style="color: #00F35A; font-weight: bold; margin-right: 10px;">Criar Rifa</a>
-        <a href="{% url 'logout' %}">Sair</a>
-      {% else %}
-        <a href="{% url 'login' %}">Entrar</a>
-        <a href="{% url 'cadastro' %}">Cadastrar</a>
-      {% endif %}
-    </div>
-  </div>
+{% load static %}
+<style>
+    :root {
+        --sidebar-width: 280px;
+    }
+
+    /* Reseta o corpo do site e dá um espaço no topo para a barra de navegação */
+    body {
+        margin: 0;
+        background-color: #f4f7f6;
+        font-family: Arial, sans-serif;
+    }
+
+    /* --- BARRA SUPERIOR FIXA (Onde fica o Hambúrguer) --- */
+    .top-navbar {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background-color: #1e293b;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        z-index: 999;
+    }
+
+    .menu-toggle-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 2.8rem;
+        cursor: pointer;
+        margin-right: 15px;
+        transition: transform 0.2s;
+    }
+    .menu-toggle-btn:hover {
+        transform: scale(1.1);
+        color: #00F35A;
+    }
+
+    .top-navbar .logo {
+        font-size: 4rem;
+        font-weight: 800;
+        color: #00F35A;
+        text-decoration: none;
+        letter-spacing: 1px;
+        margin-left: 30px;
+    }
+
+    /* --- SIDEBAR LATERAL (Escondida por padrão) --- */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -300px; /* Fica fora da tela */
+        width: var(--sidebar-width);
+        height: 100vh;
+        background-color: #1e293b;
+        color: #f8fafc;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.2);
+        z-index: 1001; /* Fica acima de tudo */
+        transition: left 0.3s ease-in-out;
+    }
+
+    /* Classe que o JavaScript adiciona para mostrar o menu */
+    .sidebar.active {
+        left: 0;
+    }
+
+    /* --- OVERLAY ESCURO (Fundo da tela quando o menu abre) --- */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000; /* Abaixo da sidebar, mas acima do site */
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .sidebar-overlay.active {
+        opacity: 1;
+        visibility: visible;
+        backdrop-filter: blur(2px); /* Efeito de desfoque no fundo */
+    }
+
+    /* Cabeçalho da Sidebar (Botão Fechar) */
+    .sidebar-header {
+        padding: 20px;
+        background-color: #0f172a;
+        border-bottom: 1px solid #334155;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .sidebar-header span {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #00F35A;
+    }
+    .close-btn {
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 2.5rem;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .close-btn:hover { color: #ef4444; }
+
+    /* Área do Usuário */
+    .sidebar-user {
+        padding: 15px 20px;
+        text-align: center;
+        font-size: 1.4rem;
+        background-color: #1e293b;
+        border-bottom: 1px solid #334155;
+    }
+    .sidebar-user strong { color: #38bdf8; }
+
+    /* Navegação */
+    .sidebar-nav {
+        flex: 1;
+        padding: 10px 0;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .nav-section {
+        padding: 15px 25px 5px;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        color: #94a3b8;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .sidebar-nav a {
+        padding: 12px 25px;
+        color: #cbd5e1;
+        text-decoration: none;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+
+    .sidebar-nav a:hover {
+        background-color: #334155;
+        color: #fff;
+        padding-left: 32px;
+        border-left: 4px solid #38bdf8;
+    }
+
+    .btn-create { color: #00F35A !important; font-weight: bold; }
+    .btn-create:hover { border-left-color: #00F35A !important; background-color: rgba(0, 243, 90, 0.1) !important; }
+    
+    .btn-danger { color: #ef4444 !important; }
+    .btn-danger:hover { border-left-color: #ef4444 !important; background-color: rgba(239, 68, 68, 0.1) !important; }
+</style>
+
+<!-- 1. Barra Superior Fixa -->
+<header class="top-navbar">
+    <button id="open-menu-btn" class="menu-toggle-btn">☰</button>
+    <a href="{% url 'home' %}" class="logo">Rifando</a>
 </header>
+
+<!-- 2. Fundo Escuro (Overlay) -->
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+<!-- 3. Menu Lateral Deslizante -->
+<aside id="main-sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <span>Menu</span>
+        <button id="close-menu-btn" class="close-btn">&times;</button>
+    </div>
+
+    <div class="sidebar-user">
+        {% if user.is_authenticated %}
+            Olá, <strong>{{ user.username }}</strong>
+        {% else %}
+            Visitante
+        {% endif %}
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="{% url 'home' %}">🏠 Início</a>
+
+        {% if user.is_authenticated %}
+            {% if user.perfil.papel == 'ORGANIZADOR' or user.is_superuser %}
+                <div class="nav-section">Gestão de Campanhas</div>
+                <a href="{% url 'meu_painel' %}">📊 Meus Sorteios</a>
+                <a href="{% url 'painel_relatorios' %}">📈 Relatórios Financeiros</a> 
+                <a href="{% url 'gerenciar_comprovantes' %}">✅ Validar PIX</a>
+                <a href="{% url 'moderar_comentarios' %}">💬 Comentários</a>
+                <a href="{% url 'gerenciar_vendedores' %}">👥 Equipe de Vendas</a>
+                
+                <div class="nav-section">Ações</div>
+                <a href="{% url 'criar_rifa' %}" class="btn-create">➕ Criar Nova Rifa</a>
+            
+            {% elif user.perfil.papel == 'VENDEDOR' %}
+                <div class="nav-section">Minhas Vendas</div>
+                <a href="#">💰 Meu Painel de Vendas</a>
+            {% endif %}
+
+            <div class="nav-section">Conta</div>
+            <a href="{% url 'logout' %}" class="btn-danger">🚪 Sair do Sistema</a>
+        
+        {% else %}
+            <div class="nav-section">Acesso</div>
+            <a href="{% url 'login' %}">🔑 Entrar</a>
+            <a href="{% url 'cadastro' %}">📝 Criar Conta</a>
+        {% endif %}
+    </nav>
+</aside>
+
+<!-- 4. Lógica JavaScript para abrir e fechar o menu -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebar = document.getElementById('main-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const openBtn = document.getElementById('open-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+
+        // Função para Abrir
+        function openMenu() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+        }
+
+        // Função para Fechar
+        function closeMenu() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        // Eventos de Clique
+        openBtn.addEventListener('click', openMenu);
+        closeBtn.addEventListener('click', closeMenu);
+        
+        // Permite fechar o menu clicando fora dele (no fundo escuro)
+        overlay.addEventListener('click', closeMenu);
+    });
+</script>

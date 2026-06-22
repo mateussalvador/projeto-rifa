@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <title>Meus Vendedores | Sistema de Rifas</title>
+    {% include 'core/partials/head.html' %}
+    <style>
+        .vendedores-container { margin: 40px auto; max-width: 1200px; display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
+        @media (max-width: 768px) { .vendedores-container { grid-template-columns: 1fr; } }
+        .box-panel { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border: 1px solid #eee; }
+        .box-title { font-size: 2.2rem; font-weight: 700; border-bottom: 2px solid #00A53D; padding-bottom: 10px; margin-bottom: 20px; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 1.4rem; font-weight: 600; margin-bottom: 5px; }
+        .btn-submit { background: #6f42c1; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 1.5rem; cursor: pointer; }
+        .card-vendedor { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 20px; margin-bottom: 20px; }
+        .associacao-form { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ced4da; }
+        .associacao-form select, .associacao-form input { padding: 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 1.3rem; }
+        .btn-associar { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .rifa-tag { display: inline-block; background: #e2e8f0; color: #334155; padding: 5px 10px; border-radius: 4px; font-size: 1.2rem; font-weight: 600; margin-right: 5px; margin-top: 5px;}
+    </style>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+
+    <main class="container vendedores-container">
+        
+        <div class="box-panel">
+            <h2 class="box-title">➕ Novo Vendedor</h2>
+            <p style="font-size: 1.3rem; color: #666; margin-bottom: 15px;">A senha será gerada automaticamente e enviada para o e-mail informado.</p>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="padding: 10px; border-radius: 4px; margin-bottom: 15px; background-color: #d4edda; color: #155724; font-size: 1.3rem;">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="form_vendedor" value="1">
+                
+                <div class="form-group">
+                    <label>Usuário:</label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    <label>E-mail:</label>
+                    {{ form.email }}
+                </div>
+                <div class="form-group">
+                    <label>Telefone / WhatsApp:</label>
+                    {{ form.telefone }}
+                </div>
+                <button type="submit" class="btn-submit">Cadastrar e Enviar Senha</button>
+            </form>
+        </div>
+
+        <div class="box-panel">
+            <h2 class="box-title">👥 Minha Equipe de Vendas</h2>
+            
+            {% for vendedor in vendedores %}
+                <div class="card-vendedor">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 1.8rem; font-weight: bold; color: #333;">👤 {{ vendedor.username }}</h3>
+                        <span style="font-size: 1.3rem; color: #666;">✉️ {{ vendedor.email }}</span>
+                    </div>
+
+                    <div style="margin-top: 10px;">
+                        <strong style="font-size: 1.3rem;">Rifas autorizadas:</strong><br>
+                        {% for vinculo in vendedor.rifas_permitidas.all %}
+                            <span class="rifa-tag">🎟️ {{ vinculo.rifa.titulo }} (Comissão: R$ {{ vinculo.comissao_fixa }})</span>
+                        {% empty %}
+                            <span style="font-size: 1.3rem; color: #999; font-style: italic;">Nenhuma rifa associada ainda.</span>
+                        {% endfor %}
+                    </div>
+
+                    <form method="POST" class="associacao-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_associar" value="1">
+                        <input type="hidden" name="vendedor_id" value="{{ vendedor.id }}">
+                        
+                        <select name="rifa_id" required style="flex: 2;">
+                            <option value="">-- Selecionar Rifa --</option>
+                            {% for rifa in rifas %}
+                                <option value="{{ rifa.id }}">{{ rifa.titulo }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                        <input type="number" name="comissao" step="0.01" min="0" placeholder="Comissão (R$)" required style="flex: 1;">
+                        <button type="submit" class="btn-associar">Vincular Rifa</button>
+                    </form>
+                </div>
+            {% empty %}
+                <div style="text-align: center; padding: 40px; color: #6c757d; font-size: 1.5rem;">
+                    Nenhum vendedor parceiro cadastrado ainda.
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+</body>
+</html>

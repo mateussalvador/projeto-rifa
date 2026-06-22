@@ -5,10 +5,19 @@
     <title>{{ rifa.titulo }} | Detalhes da Rifa</title>
     {% include 'core/partials/head.html' %}
     <style>
-        .detalhe-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; margin-bottom: 60px; }
+        .detalhe-container { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 40px; 
+            margin-top: 40px; 
+            margin-bottom: 60px; }
+        
         @media (max-width: 768px) { .detalhe-container { grid-template-columns: 1fr; gap: 20px; } }
+        
         .progress-bar-container { background-color: #e0e0e0; border-radius: 8px; overflow: hidden; margin: 20px 0; height: 30px; }
+        
         .progress-bar-fill { background-color: #00A53D; height: 100%; text-align: center; color: white; font-weight: bold; line-height: 30px; }
+        
         .grid-numeros { display: grid; grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)); gap: 12px; margin-top: 25px; }
         .num-card { padding: 15px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-size: 1.4rem; color: #fff; transition: transform 0.2s; user-select: none; }
         .DISPONIVEL { background-color: #28a745; cursor: pointer; }
@@ -107,6 +116,44 @@
                     {% endfor %}
                 </div>
             </div>
+        </div>
+
+        <!-- SESSÃO DE COMENTÁRIOS -->
+        <div style="margin-top: 50px; background: #fff; padding: 30px; border-radius: 8px; border: 1px solid #e9ecef; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
+            
+            <h3 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 20px;">Deixe seu comentário:</h3>
+            
+            {% if user.is_authenticated %}
+                <form method="POST" style="margin-bottom: 40px; background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_comentario" value="1">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>{{ form_comentario.nome }}</div>
+                        <div>{{ form_comentario.email }}</div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        {{ form_comentario.texto }}
+                    </div>
+                    <button type="submit" style="background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; font-size: 1.4rem; cursor: pointer;">Enviar Comentário</button>
+                </form>
+            {% else %}
+                <div style="margin-bottom: 40px; background: #f8f9fa; padding: 30px 20px; border-radius: 8px; text-align: center; border: 1px dashed #ced4da;">
+                    <p style="font-size: 1.5rem; color: #555; margin-bottom: 15px;">Quer interagir, torcer ou tirar dúvidas sobre este sorteio?</p>
+                    <a href="{% url 'login' %}" style="display: inline-block; background: #6f42c1; color: white; padding: 10px 25px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 1.4rem;">Faça login para comentar</a>
+                </div>
+            {% endif %}
+
+            <h3 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 20px; border-bottom: 2px solid #28a745; padding-bottom: 10px;">Comentários ({{ comentarios|length }})</h3>
+            
+            {% for com in comentarios %}
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                    <strong style="font-size: 1.5rem; color: #333;">{{ com.nome }}</strong>
+                    <span style="font-size: 1.2rem; color: #888; margin-left: 10px;">{{ com.data_criacao|date:"d/m/Y \à\s H:i" }}</span>
+                    <p style="font-size: 1.4rem; color: #555; margin-top: 5px;">{{ com.texto }}</p>
+                </div>
+            {% empty %}
+                <p style="font-size: 1.4rem; color: #666; font-style: italic;">Seja o primeiro a comentar nesta rifa!</p>
+            {% endfor %}
         </div>
     </main>
 

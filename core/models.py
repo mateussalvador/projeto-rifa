@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Rifa(models.Model):
@@ -81,3 +83,65 @@ class NumerosRifa(models.Model):
 
     def __str__(self):
         return f"Nº {self.numero} - {self.rifa.titulo} [{self.status}]"
+
+
+class PerfilUsuario(models.Model):
+    PAPEIS_CHOICES = (
+        ('ORGANIZADOR', 'Organizador'),
+        ('VENDEDOR', 'Vendedor Parceiro'),
+    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')  # noqa: E501
+    papel = models.CharField(max_length=15, choices=PAPEIS_CHOICES, default='ORGANIZADOR')  # noqa: E501
+    # Se for vendedor, a qual organizador ele pertence?
+    organizador_vinculado = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='meus_vendedores')  # noqa: E501
+    telefone = models.CharField(max_length=15, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_papel_display()}"
+
+
+class VendedorRifa(models.Model):
+    """
+    Associação Many-to-Many: Quais rifas o vendedor tem permissão para vender, 
+    e qual a comissão fixa combinada para aquela campanha específica.
+    """
+    vendedor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rifas_permitidas')  # noqa: E501
+    rifa = models.ForeignKey('Rifa', on_delete=models.CASCADE, related_name='vendedores_associados')  # noqa: E501
+    comissao_fixa = models.DecimalField(max_digits=6, decimal_places=2, default=0.00, help_text="Valor fixo ganho por cada número pago")  # noqa: E501
+    ativo = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('vendedor', 'rifa')
+        # Impede que o organizador vincule o
+        # mesmo vendedor duas vezes na mesma rifa
+
+    def __str__(self):
+        return f"{self.vendedor.username} -> {self.rifa.titulo} (R$ {self.comissao_fixa})"  # noqa: E501
+
+
+@receiver(post_save, sender=User)
+def criar_perfil_usuario(sender, instance, created, **kwargs):
+    if created:
+        PerfilUsuario.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def salvar_perfil_usuario(sender, instance, **kwargs):
+    instance.perfil.save()
+
+
+class Comentario(models.Model):
+    STATUS_CHOICES = (
+        ('PENDENTE', 'Pendente de Moderação'),
+        ('APROVADO', 'Aprovado e Público'),
+        ('REJEITADO', 'Rejeitado / Oculto'),
+    )
+    rifa = models.ForeignKey(Rifa, on_delete=models.CASCADE, related_name='comentarios')  # noqa: E501
+    nome = models.CharField(max_length=100)
+    email = models.EmailField(help_text="O e-mail não será exibido publicamente.")  # noqa: E501
+    texto = models.TextField()
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='PENDENTE')  # noqa: E501
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comentário de {self.nome} ({self.get_status_display()})"

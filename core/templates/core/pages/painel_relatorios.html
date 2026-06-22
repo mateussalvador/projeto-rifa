@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <title>Relatórios Financeiros | Sistema de Rifas</title>
+    {% include 'core/partials/head.html' %}
+    <style>
+        .relatorios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 30px auto; }
+        .card-metric { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border-top: 4px solid #6f42c1; text-align: center; }
+        .card-arrecadado { border-top-color: #28a745; }
+        .card-pendente { border-top-color: #ffc107; }
+        .card-inadimplencia { border-top-color: #dc3545; }
+        .metric-value { font-size: 2.8rem; font-weight: 800; color: #333; margin-top: 10px; }
+        .table-panel { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); margin-bottom: 30px; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 15px; }
+        .btn-csv { background: #107c41; color: white; padding: 8px 15px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 1.3rem; display: inline-flex; align-items: center; gap: 5px; }
+        table { width: 100%; border-collapse: collapse; font-size: 1.4rem; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: 700; color: #555; }
+    </style>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+
+    <main class="container" style="max-width: 1100px; margin-top: 30px;">
+        <h2 style="font-size: 2.4rem; font-weight: 700; color: #1e293b;">📊 Central Analítica & Relatórios</h2>
+        <p style="font-size: 1.4rem; color: #666;">Acompanhe o faturamento em tempo real, controle a inadimplência e exporte as planilhas oficiais.</p>
+
+        <!-- Indicadores Numéricos de Fechamento Finaceiro -->
+        <div class="relatorios-grid">
+            <div class="card-metric card-arrecadado">
+                <span style="font-size: 1.3rem; text-transform: uppercase; color: #666; font-weight: bold;">🟢 Total Arrecadado</span>
+                <div class="metric-value">R$ {{ total_arrecadado|floatformat:2 }}</div>
+            </div>
+            <div class="card-metric card-pendente">
+                <span style="font-size: 1.3rem; text-transform: uppercase; color: #666; font-weight: bold;">🟡 Faturamento Pendente</span>
+                <div class="metric-value">R$ {{ total_pendente|floatformat:2 }}</div>
+            </div>
+            <div class="card-metric card-inadimplencia">
+                <span style="font-size: 1.3rem; text-transform: uppercase; color: #666; font-weight: bold;">🔴 Perda por Inadimplência</span>
+                <div class="metric-value">R$ {{ total_inadimplencia|floatformat:2 }}</div>
+            </div>
+        </div>
+
+        <!-- Tabela Analítica: Desempenho de Equipe -->
+        <div class="table-panel">
+            <div class="table-header">
+                <h3 style="font-size: 1.8rem; font-weight: 700; color: #333;">👥 Desempenho de Vendedores</h3>
+                <a href="{% url 'exportar_csv' 'vendedores' %}" class="btn-csv">📥 Exportar Planilha (.CSV)</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome do Vendedor</th>
+                        <th>Cotas Pagas</th>
+                        <th>Cotas Pendentes</th>
+                        <th>Comissão Devida</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in vendedores %}
+                        <tr>
+                            <td><strong>@{{ v.username }}</strong></td>
+                            <td><span style="color: #28a745; font-weight: bold;">{{ v.vendas_pagas }}</span></td>
+                            <td><span style="color: #ffc107; font-weight: bold;">{{ v.vendas_pendentes }}</span></td>
+                            <td><span style="color: #6f42c1; font-weight: bold;">R$ {{ v.comissao|floatformat:2 }}</span></td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #888; font-style: italic;">Nenhum dado de comissão registrado ainda.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

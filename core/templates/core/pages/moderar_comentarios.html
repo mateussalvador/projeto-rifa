@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <title>Moderar Comentários | Sistema de Rifas</title>
+    {% include 'core/partials/head.html' %}
+    <style>
+        .box-panel { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); margin: 40px auto; max-width: 900px; }
+        .comment-card { background: #f8f9fa; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        .btn-action { padding: 8px 15px; font-weight: bold; border-radius: 4px; border: none; cursor: pointer; color: white; text-decoration: none; display: inline-block; }
+        .btn-approve { background: #28a745; }
+        .btn-reject { background: #dc3545; }
+    </style>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+
+    <main class="container">
+        <div class="box-panel">
+            <h2 style="font-size: 2.2rem; margin-bottom: 20px; border-bottom: 2px solid #00A53D; padding-bottom: 10px;">💬 Comentários Pendentes</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="padding: 10px; border-radius: 4px; margin-bottom: 15px; background-color: #d4edda; color: #155724; font-size: 1.3rem;">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            {% for com in comentarios %}
+                <div class="comment-card">
+                    <p style="font-size: 1.4rem; font-weight: bold; margin-bottom: 5px;">{{ com.nome }} <span style="font-weight: normal; color: #666;">({{ com.email }})</span></p>
+                    <p style="font-size: 1.2rem; color: #888; margin-bottom: 10px;">Rifa: <strong>{{ com.rifa.titulo }}</strong> | Postado em: {{ com.data_criacao|date:"d/m/Y H:i" }}</p>
+                    <p style="font-size: 1.5rem; color: #333; margin-bottom: 15px; background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">"{{ com.texto }}"</p>
+                    
+                    <a href="{% url 'acao_comentario' com.id 'aprovar' %}" class="btn-action btn-approve">✅ Aprovar</a>
+                    <a href="{% url 'acao_comentario' com.id 'rejeitar' %}" class="btn-action btn-reject">❌ Rejeitar</a>
+                </div>
+            {% empty %}
+                <p style="font-size: 1.5rem; color: #666; text-align: center; padding: 20px;">Nenhum comentário aguardando moderação.</p>
+            {% endfor %}
+        </div>
+    </main>
+</body>
+</html>

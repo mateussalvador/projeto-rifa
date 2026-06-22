@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -123,3 +122,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Define para onde o @login_required deve apontar
 LOGIN_URL = 'login'
+
+
+# ==========================================
+# CONFIGURAÇÃO DE E-MAIL PARA TESTES LOCAIS
+# ==========================================
+# Impede o erro 10061 salvando os e-mails em uma pasta 
+# local em vez de tentar enviar via rede
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
+# Define a pasta onde os e-mails serão depositados
+# (Cria a pasta 'emails-de-teste' na raiz do projeto)
+EMAIL_FILE_PATH = BASE_DIR / 'emails-de-teste'

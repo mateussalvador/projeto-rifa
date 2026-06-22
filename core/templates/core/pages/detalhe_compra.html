@@ -126,12 +126,18 @@
                 
                 <button type="submit" class="btn-submit">Enviar Comprovante</button>
             </form>
-
+            
+            {% if compra.status == 'PENDENTE' %}
             <a href="{% url 'cancelar_reserva' compra.id %}" 
                class="btn-cancelar"
                onclick="return confirm('Tem certeza que deseja cancelar esta reserva? O número voltará a ficar disponível imediatamente para outros compradores.');">
                 ❌ Desistir e Cancelar Reserva
             </a>
+            {% else %}
+            <div style="padding: 12px; background-color: #d4edda; color: #155724; font-weight: bold; border-radius: 4px; text-align: center; font-size: 1.4rem;">
+                🔒 Esta cota já está paga e confirmada. Não é possível cancelar.
+            </div>
+            {% endif %}
         </div>
     </main>
 </body>
