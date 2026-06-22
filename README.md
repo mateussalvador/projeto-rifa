@@ -6,7 +6,7 @@ O sistema foi desenhado para atender tanto o organizador da campanha quanto os c
 
 ---
 
-## 🚀 Funcionalidades Principais (Sprints 1 a 12)
+## 🚀 Funcionalidades Principais
 
 ### 👤 Autenticação & Usuários
 * **Multi-papeis:** Suporte para Organizadores (Criadores), Vendedores Parceiros e Compradores comuns.
