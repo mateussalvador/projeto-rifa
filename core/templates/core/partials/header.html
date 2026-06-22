@@ -1,9 +1,19 @@
-  <header class="header-bg">
-    <div class="header container">  
-      <a class="logo" href="">Rifando</a>
-      <div class="acesso">
-        <a href="">Entrar</a>
-        <a href="">Cadastrar</a>
-      </div>
+<header class="header-bg">
+  <div class="header container">  
+    <a class="logo" href="{% url 'home' %}">Rifando</a>
+    <div class="acesso">
+      {% if user.is_authenticated %}
+        <span style="align-self: center; font-weight: bold; margin-right: 15px; font-size: 1.6rem;">Olá, {{ user.username }}</span>
+        
+        <a href="{% url 'meu_painel' %}" style="margin-right: 10px;">Meus Sorteios</a>
+        <a href="{% url 'gerenciar_comprovantes' %}" style="margin-right: 15px; color: #fff3cd; font-weight: 500;">Validar PIX</a>
+        
+        <a href="{% url 'criar_rifa' %}" style="color: #00F35A; font-weight: bold; margin-right: 10px;">Criar Rifa</a>
+        <a href="{% url 'logout' %}">Sair</a>
+      {% else %}
+        <a href="{% url 'login' %}">Entrar</a>
+        <a href="{% url 'cadastro' %}">Cadastrar</a>
+      {% endif %}
     </div>
-  </header>
+  </div>
+</header>

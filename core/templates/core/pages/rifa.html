@@ -1,11 +1,126 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>{{ rifa.titulo }} | Detalhes da Rifa</title>
+    {% include 'core/partials/head.html' %}
+    <style>
+        .detalhe-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; margin-bottom: 60px; }
+        @media (max-width: 768px) { .detalhe-container { grid-template-columns: 1fr; gap: 20px; } }
+        .progress-bar-container { background-color: #e0e0e0; border-radius: 8px; overflow: hidden; margin: 20px 0; height: 30px; }
+        .progress-bar-fill { background-color: #00A53D; height: 100%; text-align: center; color: white; font-weight: bold; line-height: 30px; }
+        .grid-numeros { display: grid; grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)); gap: 12px; margin-top: 25px; }
+        .num-card { padding: 15px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-size: 1.4rem; color: #fff; transition: transform 0.2s; user-select: none; }
+        .DISPONIVEL { background-color: #28a745; cursor: pointer; }
+        .DISPONIVEL:hover { background-color: #218838; transform: scale(1.05); }
+        .SELECIONADO { background-color: #007bff !important; transform: scale(1.1); box-shadow: 0 0 12px rgba(0, 123, 255, 0.6); }
+        .RESERVADO { background-color: #cbd5e1; color: #475569; cursor: not-allowed; }
+        .RESERVADO_PESSOAL { background-color: #ff9f43; color: white; cursor: pointer; }
+        .PAGO { background-color: #dc3545; color: white; }
+        .GANHADOR-CARD { background-color: #6f42c1 !important; color: white !important; animation: pulse 1.5s infinite; transform: scale(1.05); }
+        .box-status { padding: 8px 15px; border-radius: 50px; font-weight: bold; font-size: 1.3rem; display: inline-block; margin-bottom: 15px; }
+        .status-aberta { background-color: #d4edda; color: #155724; }
+        .status-encerrada { background-color: #f8d7da; color: #721c24; }
+        .box-confirmacao { background: #ffffff; border: 2px dashed #007bff; padding: 25px; border-radius: 8px; margin-top: 25px; display: none; }
+        .select-vendedor { width: 100%; padding: 11px; font-size: 1.4rem; margin-top: 8px; margin-bottom: 15px; border: 1px solid #ced4da; border-radius: 6px; }
+        .btn-confirmar { background-color: #007bff; color: white; padding: 12px; width: 100%; border: none; border-radius: 6px; font-weight: bold; font-size: 1.6rem; cursor: pointer; }
+        .btn-video { display: inline-block; background-color: #ff0000; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 15px; font-size: 1.4rem; }
+        .btn-video:hover { background-color: #cc0000; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(111, 66, 193, 0.7); } 70% { box-shadow: 0 0 0 12px rgba(111, 66, 193, 0); } 100% { box-shadow: 0 0 0 0 rgba(111, 66, 193, 0); } }
+    </style>
 </head>
 <body>
-    
+    {% include 'core/partials/header.html' %}
+
+    <main class="container">
+        <div class="detalhe-container">
+            <div>
+                {% if rifa.cover %}
+                    <img src="{{ rifa.cover.url }}" alt="{{ rifa.titulo }}" style="border-radius: 8px; width: 100%; max-height: 450px; object-fit: cover;">
+                {% endif %}
+                
+                <h1 style="font-size: 3.2rem; margin-top: 25px; color: #333; font-weight: 700;">{{ rifa.titulo }}</h1>
+                
+                {% if rifa.finalizada %}
+                    <div class="box-status status-encerrada">🔒 Status: Encerrada / Sorteada</div>
+                    <div style="background: #f3e5f5; border: 1px solid #d1c4e9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #4a148c; margin-bottom: 5px;">🏆 Resultado do Sorteio</h3>
+                        <p style="font-size: 1.6rem;">O número contemplado foi o <strong style="font-size: 2.2rem; color: #6f42c1;">Nº {{ rifa.numero_ganhador }}</strong>!</p>
+                        <p style="font-size: 1.4rem; color: #555;">Ganhador: <strong>{{ rifa.ganhador.username }}</strong></p>
+                        
+                        {% if rifa.link_sorteio %}
+                            <a href="{{ rifa.link_sorteio }}" target="_blank" class="btn-video">📺 Assistir Transmissão do Sorteio ↗</a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="box-status status-aberta">🟢 Status: Aberta (Adquira suas cotas)</div>
+                {% endif %}
+
+                <p style="font-size: 1.6rem; color: #666; margin: 15px 0; line-height: 1.6;">{{ rifa.descricao }}</p>
+            </div>
+
+            <div>
+                <div style="background: #f8f9fa; padding: 30px; border-radius: 8px; border: 1px solid #e9ecef;">
+                    <h2 style="color: #28a745; font-weight: 700; font-size: 2.8rem; margin-bottom: 5px;">R$ {{ rifa.valor }}</h2>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: {{ porcentagem }}%;">{{ porcentagem }}%</div>
+                    </div>
+                </div>
+
+                {% if not rifa.finalizada %}
+                <div id="painelConfirmacao" class="box-confirmacao">
+                    <h4 style="color: #007bff; margin-bottom: 10px; font-weight: 600;">Confirmar Escolha</h4>
+                    <p style="font-size: 1.5rem;">Número selecionado: <strong id="numeroSelecionadoTexto" style="font-size: 2rem; color: #007bff;">-</strong></p>
+                    <form id="formReserva" method="POST" action="">
+                        {% csrf_token %}
+                        <select name="vendedor" id="vendedorSelect" class="select-vendedor">
+                            <option value="" selected>-- Nenhum (Comprar diretamente pelo site) --</option>
+                            {% for v in vendedores %}
+                                <option value="{{ v.id }}">{{ v.username }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn-confirmar">Confirmar Reserva de Cota</button>
+                    </form>
+                </div>
+                {% endif %}
+
+                <h3 style="margin-top: 35px; font-size: 2rem; font-weight: 600;">Grade de Números:</h3>
+                <div class="grid-numeros">
+                    {% for n in numeros %}
+                        {% if rifa.finalizada and n.numero == rifa.numero_ganhador %}
+                            <div class="num-card GANHADOR-CARD" title="🔥 NÚMERO GANHADOR!">
+                                {{ n.numero }}
+                            </div>
+                        {% elif n.status == 'DISPONIVEL' and not rifa.finalizada %}
+                            <div class="num-card DISPONIVEL" onclick="selecionarNumero(this, {{ n.numero }})" title="Disponível">
+                                {{ n.numero }}
+                            </div>
+                        {% elif n.pessoal and not rifa.finalizada %}
+                            <div class="num-card RESERVADO_PESSOAL" onclick="location.href='{% url 'detalhe_compra' n.compra.id %}'" title="Sua reserva">
+                                {{ n.numero }}
+                            </div>
+                        {% else %}
+                            <div class="num-card {{ n.status }}" title="Indisponível">
+                                {{ n.numero }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function selecionarNumero(elemento, numero) {
+            const cards = document.querySelectorAll('.num-card');
+            cards.forEach(card => card.classList.remove('SELECIONADO'));
+            elemento.classList.add('SELECIONADO');
+            document.getElementById('numeroSelecionadoTexto').innerText = numero;
+
+            const form = document.getElementById('formReserva');
+            form.action = `/rifas/{{ rifa.id }}/reservar/${numero}/`;
+            document.getElementById('painelConfirmacao').style.display = 'block';
+        }
+    </script>
 </body>
 </html>

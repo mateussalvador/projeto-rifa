@@ -1,17 +1,68 @@
-<section class="lista-rifas-bg container">
-    <div class="lista-rifas">
-        {% for rifa in rifas %}
+{% load static %}
+
+<div class="rifas-grid">
+  {% for rifa in rifas %}
+    <div class="rifa-card" style="background: #fff; border: 1px solid #e9ecef; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.02); display: flex; flex-direction: column;">
+      
+      <!-- Imagem de Capa da Rifa -->
+      <div class="rifa-img-container" style="position: relative; width: 100%; height: 200px; overflow: hidden; background-color: #eee;">
+        {% if rifa.cover %}
+          <img src="{{ rifa.cover.url }}" alt="{{ rifa.titulo }}" style="width: 100%; height: 100%; object-fit: cover;">
+        {% else %}
+          <img src="{% static 'core/img/money-2.jpg' %}" alt="{{ rifa.titulo }}" style="width: 100%; height: 100%; object-fit: cover;">
+        {% endif %}
         
-        <div class="rifa">
-            <h2 class="titulo-rifa">{{rifa.titulo}}</h2>
-            <p class="descricao">{{rifa.descricao}}</p>
-            <div class="autor-e-valor">
-                <span class="valor">R$ {{rifa.valor}}</span>
-                <span class="autor">{{rifa.autor}}</span>
-            </div>
-            <img src="{{rifa.cover.url}}" alt="">
-            <a class="btn" href="">Ver mais</a>
+        <!-- Badge Dinâmico de Status por cima da Imagem -->
+        <span style="position: absolute; top: 12px; left: 12px; padding: 5px 12px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+          {% if rifa.finalizada %} background-color: #dc3545; {% else %} background-color: #28a745; {% endif %}">
+          {% if rifa.finalizada %} 🔒 Encerrada {% else %} 🟢 Aberta {% endif %}
+        </span>
+      </div>
+
+      <!-- Conteúdo Informativo do Card -->
+      <div class="rifa-content" style="padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <h3 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: #333;">{{ rifa.titulo }}</h3>
+          <p style="font-size: 1.3rem; color: #666; margin-bottom: 15px; line-height: 1.4;">{{ rifa.descricao|truncatewords:15 }}</p>
         </div>
-        {% endfor %}
+
+        <div>
+          <!-- Data Estimada ou Oficial do Sorteio -->
+          <div style="background-color: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 15px; border-left: 3px solid #6f42c1; font-size: 1.2rem; color: #495057;">
+            📅 <strong>Data do Sorteio:</strong> 
+            {% if rifa.data_sorteio %}
+              {{ rifa.data_sorteio|date:"d/m/Y \à\s H:i" }}
+            {% else %}
+              <span style="color: #888; font-style: italic;">A definir pelo organizador</span>
+            {% endif %}
+          </div>
+
+          <!-- Rodapé do Card: Preço e Ação -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+            <span style="font-size: 1.8rem; font-weight: 700; color: #28a745;">R$ {{ rifa.valor }}</span>
+            <a href="{% url 'rifas' rifa.id %}" style="display: inline-block; background-color: #007bff; color: white; padding: 8px 16px; border-radius: 4px; font-weight: 600; text-decoration: none; font-size: 1.3rem; transition: background-color 0.2s;"
+               onmouseover="this.style.backgroundColor='#0056b3'" onmouseout="this.style.backgroundColor='#007bff'">
+              {% if rifa.finalizada %} Ver Resultado {% else %} Adquirir Cota {% endif %}
+            </a>
+          </div>
+        </div>
+
+      </div>
     </div>
-</section>
+  {% empty %}
+    <div style="grid-column: 1 / -1; background: #f8f9fa; padding: 40px; text-align: center; border-radius: 8px; border: 1px solid #eee; font-size: 1.6rem; color: #666;">
+      👋 Nenhuma rifa ativa no momento. Que tal criar uma agora mesmo?
+    </div>
+  {% endfor %}
+</div>
+
+<!-- Estilização rápida da Grid Responsiva caso não possua no style.css -->
+<style>
+  .rifas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+    margin-bottom: 50px;
+  }
+</style>

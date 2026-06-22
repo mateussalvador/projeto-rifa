@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <title>Entrar | Sistema de Rifas</title>
+    {% include 'core/partials/head.html' %}
+    <style>
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 75vh;
+        }
+        .auth-card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid #e9ecef;
+        }
+        .auth-card h2 {
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 1.4rem;
+            color: #495057;
+        }
+        /* Estilização para os inputs padrões do Django AuthenticationForm */
+        .auth-card input[type="text"],
+        .auth-card input[type="password"] {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 1.4rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .auth-card input:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.15);
+        }
+        .btn-auth {
+            background-color: #28a745;
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+        .btn-auth:hover {
+            background-color: #218838;
+        }
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 1.3rem;
+            color: #666;
+        }
+        .auth-footer a {
+            color: #28a745;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+
+    <main class="container auth-wrapper">
+        <div class="auth-card">
+            <h2>Acessar sua Conta</h2>
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" style="padding: 12px; background-color: #f8d7da; color: #721c24; border-radius: 6px; margin-bottom: 15px; font-size: 1.3rem;">
+                    Usuário ou senha incorretos. Por favor, tente novamente.
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="id_username">Nome de Usuário</label>
+                    {{ form.username }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password">Senha</label>
+                    {{ form.password }}
+                </div>
+
+                <button type="submit" class="btn-auth">Entrar</button>
+            </form>
+
+            <div class="auth-footer">
+                Não tem cadastro? <a href="{% url 'cadastro' %}">Cadastre-se grátis</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

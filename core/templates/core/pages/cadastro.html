@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <title>Cadastrar-se | Sistema de Rifas</title>
+    {% include 'core/partials/head.html' %}
+    <style>
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        .auth-card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #e9ecef;
+        }
+        .auth-card h2 {
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 1.4rem;
+            color: #495057;
+        }
+        .btn-auth {
+            background-color: #28a745;
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+        .btn-auth:hover {
+            background-color: #218838;
+        }
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.3rem;
+            color: #666;
+        }
+        .auth-footer a {
+            color: #28a745;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+
+    <main class="container auth-wrapper">
+        <div class="auth-card">
+            <h2>Criar Nova Conta</h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger" style="padding: 12px; background-color: #f8d7da; color: #721c24; border-radius: 6px; margin-bottom: 15px; font-size: 1.3rem;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'cadastro' %}">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div style="color: #dc3545; font-size: 1.2rem; margin-top: 5px;">
+                                {{ field.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn-auth">Finalizar Cadastro</button>
+            </form>
+
+            <div class="auth-footer">
+                Já tem uma conta? <a href="{% url 'login' %}">Entrar aqui</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

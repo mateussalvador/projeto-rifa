@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <title>Criar Nova Rifa | Sistema de Rifas</title>
+    {% include 'core/partials/head.html' %}
+    <style>
+        .form-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9ecef;
+        }
+        .form-container h2 {
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #333;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 1.4rem;
+            color: #495057;
+        }
+        /* Estilização para deixar os inputs alinhados ao padrão do Bootstrap */
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 1.4rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .form-group input:focus, 
+        .form-group textarea:focus, 
+        .form-group select:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.15);
+        }
+        .btn-submit {
+            background-color: #28a745;
+            color: white;
+            font-weight: 600;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 15px;
+        }
+        .btn-submit:hover {
+            background-color: #218838;
+        }
+        .error-list {
+            color: #dc3545;
+            font-size: 1.2rem;
+            margin-top: 5px;
+            list-style: none;
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+
+    <main class="container">
+        <div class="form-container">
+            <h2>🚀 Lançar Nova Campanha de Rifa</h2>
+
+            <!-- Formulário com suporte a upload de arquivos (enctype crucial para o 'cover') -->
+            <form method="POST" enctype="multipart/form-data" action="{% url 'criar_rifa' %}">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        
+                        {% if field.errors %}
+                            <ul class="error-list">
+                                {% for error in field.errors %}
+                                    <li>⚠️ {{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        
+                        {% if field.help_text %}
+                            <small style="color: #6c757d; display: block; margin-top: 4px;">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn-submit">Criar Rifa e Gerar Números</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

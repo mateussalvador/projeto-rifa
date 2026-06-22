@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <title>Meu Painel de Controle</title>
+    {% include 'core/partials/head.html' %}
+    <style>
+        .panel-container { margin: 40px auto; max-width: 1000px; }
+        .panel-title { font-size: 2.8rem; font-weight: 700; margin-bottom: 30px; color: #333; border-bottom: 2px solid #28a745; padding-bottom: 10px; }
+        .rifa-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; }
+        .rifa-table th, .rifa-table td { padding: 15px 20px; text-align: left; border-bottom: 1px solid #eee; font-size: 1.4rem; }
+        .rifa-table th { background-color: #f8f9fa; }
+        .badge { padding: 6px 12px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; }
+        .badge-success { background-color: #f8d7da; color: #721c24; }
+        .badge-warning { background-color: #d4edda; color: #155724; }
+        .btn-sortear { background-color: #6f42c1; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 600; cursor: pointer; text-decoration: none; }
+        
+        /* CSS do Painel da Animação do Sorteio */
+        .overlay-sorteio { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; color: white; }
+        .contador-num { font-size: 12rem; font-weight: bold; color: #00F35A; }
+        .roleta-num { font-size: 12rem; font-weight: bold; font-family: monospace; color: #ff9f43; }
+        .texto-status { font-size: 2.4rem; margin-top: 20px; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+        
+        /* Classe de destaque para o número vencedor final */
+        .ganhador-celebracao { color: #00F35A !important; transform: scale(1.2); text-shadow: 0 0 30px rgba(0, 243, 90, 0.6); animation: pulse 1s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1.1); } to { transform: scale(1.25); } }
+    </style>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+
+    <div id="telaSorteio" class="overlay-sorteio">
+        <div id="contadorVisual" class="contador-num">3</div>
+        <div id="roletaVisual" class="roleta-num" style="display: none;">00</div>
+        <div id="statusTexto" class="texto-status">Preparando Globos...</div>
+    </div>
+
+    <main class="container panel-container">
+        <h2 class="panel-title">💼 Minhas Campanhas de Rifa</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="padding: 15px; background-color: #d4edda; color: #155724; font-size: 1.4rem; margin-bottom: 20px; border-radius: 6px;">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if minhas_rifas %}
+            <table class="rifa-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Valor Unitário</th>
+                        <th>Status</th>
+                        <th>Resultado / Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rifa in minhas_rifas %}
+                        <tr>
+                            <td><strong><a href="{% url 'rifas' rifa.id %}" style="color: #333; text-decoration: none;">{{ rifa.titulo }}</a></strong></td>
+                            <td style="font-weight: 600; color: #28a745;">R$ {{ rifa.valor }}</td>
+                            <td>
+                                {% if rifa.finalizada %}
+                                    <span class="badge badge-success">Encerrada</span>
+                                {% else %}
+                                    <span class="badge badge-warning">Aberta</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if rifa.finalizada %}
+                                    <div style="font-size: 1.3rem;">
+                                        🎯 Ganhador: <strong>{{ rifa.ganhador.username }}</strong><br>
+                                        🎟️ Número: <strong style="color: #6f42c1; font-size: 1.5rem;">Nº {{ rifa.numero_ganhador }}</strong>
+                                    </div>
+                                {% else %}
+                                    <button class="btn-sortear" onclick="iniciarAnimacaoSorteio('{% url 'realizar_sorteio' rifa.id %}', {{ rifa.qtd_numeros }})">
+                                        🎲 Realizar Sorteio
+                                    </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </main>
+
+    <script>
+        function iniciarAnimacaoSorteio(urlDestino, totalNumeros) {
+            if (!confirm("Confirmar a realização do sorteio oficial agora?")) return;
+
+            const overlay = document.getElementById('telaSorteio');
+            const contador = document.getElementById('contadorVisual');
+            const roleta = document.getElementById('roletaVisual');
+            const texto = document.getElementById('statusTexto');
+
+            overlay.style.display = 'flex';
+            contador.style.display = 'block';
+            roleta.style.display = 'none';
+            roleta.classList.remove('ganhador-celebracao');
+
+            let numeroOficialGanhador = null;
+            let nomeDoGanhador = "";
+
+            // FAZ O SORTEIO NO BACKEND LOGO NO INÍCIO VIA FETCH (EM SEGUNDO PLANO)[cite: 1]
+            fetch(urlDestino, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    numeroOficialGanhador = data.numero_ganhador;
+                    nomeDoGanhador = data.ganhador_username;
+                } else {
+                    alert("Erro no servidor: " + data.message);
+                    location.reload();
+                }
+            })
+            .catch(() => {
+                alert("Erro ao processar sorteio assíncrono.");
+                location.reload();
+            });
+
+            // PASSO 1: Contagem Regressiva Visual de 3 segundos[cite: 1]
+            let contagem = 3;
+            texto.innerText = "Iniciando sorteio em...";
+            
+            const intervaloContagem = setInterval(() => {
+                contagem--;
+                if (contagem > 0) {
+                    contador.innerText = contagem;
+                } else {
+                    clearInterval(intervaloContagem);
+                    contador.style.display = 'none';
+                    roleta.style.display = 'block';
+                    texto.innerText = "Sorteando número da sorte...";
+                    
+                    // PASSO 2: Giro Aleatório Rápido da Roleta[cite: 1]
+                    let tempoGiro = 0;
+                    const intervaloRoleta = setInterval(() => {
+                        let numeroAleatorio = Math.floor(Math.random() * totalNumeros) + 1;
+                        roleta.innerText = String(numeroAleatorio).padStart(2, '0');
+                        tempoGiro += 70;
+
+                        // Se o tempo passou de 2.5s E o backend já retornou a resposta do sorteio oficial
+                        if (tempoGiro >= 2500 && numeroOficialGanhador !== null) {
+                            clearInterval(intervaloRoleta);
+                            
+                            // TRAVA A ROLETA NO NÚMERO CONTEMPLADO OFICIAL[cite: 1]
+                            roleta.innerText = String(numeroOficialGanhador).padStart(2, '0');
+                            roleta.classList.add('ganhador-celebracao');
+                            texto.innerHTML = `🎉 NÚMERO PREMIADO: Nº ${numeroOficialGanhador}!<br><span style='color: #fff; font-size: 1.8rem;'>Ganhador: ${nomeDoGanhador}</span>`;
+
+                            // PASSO 3: Mantém o número na tela piscando por 4 segundos antes de atualizar a página[cite: 1]
+                            setTimeout(() => {
+                                location.reload(); // Recarrega para aplicar os status de 'Encerrada'[cite: 1]
+                            }, 4000);
+                        }
+                    }, 70);
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <title>Gerenciar Comprovantes | Sistema de Rifas</title>
+    {% include 'core/partials/head.html' %}
+    <style>
+        .mod-container { margin: 40px auto; max-width: 1100px; }
+        .mod-title { font-size: 2.6rem; font-weight: 700; margin-bottom: 25px; color: #333; border-bottom: 2px solid #00A53D; padding-bottom: 10px; }
+        .table-mod { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border-radius: 8px; overflow: hidden; }
+        .table-mod th, .table-mod td { padding: 15px 20px; text-align: left; border-bottom: 1px solid #eee; font-size: 1.4rem; vertical-align: middle; }
+        .table-mod th { background-color: #f8f9fa; font-weight: 600; color: #495057; }
+        .btn-action { padding: 8px 14px; border-radius: 4px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 1.3rem; display: inline-block; border: none; }
+        .btn-approve { background-color: #28a745; color: white; margin-right: 5px; }
+        .btn-approve:hover { background-color: #218838; }
+        .btn-reject { background-color: #dc3545; color: white; }
+        .btn-reject:hover { background-color: #c82333; }
+        .link-comprovante { color: #007bff; text-decoration: none; font-weight: 600; }
+        .link-comprovante:hover { text-decoration: underline; }
+        .badge-numero {
+            background-color: #007bff;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: inline-block;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+
+    <main class="container mod-container">
+        <h2 class="mod-title">💰 Validação de Pagamentos Pendentes</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="padding: 15px; border-radius: 6px; margin-bottom: 20px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; font-size: 1.4rem;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if compras %}
+            <table class="table-mod">
+                <thead>
+                    <tr>
+                        <th>Rifa / Cota</th>
+                        <th>Comprador / CPF</th>
+                        <th>Data do Pedido</th>
+                        <th>Comprovante</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for compra in compras %}
+                        <tr>
+                            <td>
+                                <strong>{{ compra.rifa.titulo }}</strong>
+                                <br>
+                                <span class="badge-numero">
+                                    🎟️ Cota: Nº {{ compra.numeros_alocados.first.numero }}
+                                </span>
+                            </td>
+                            <td>
+                                <strong>{{ compra.comprador.username }}</strong>
+                                <br>
+                                <small style="color: #6c757d;">CPF: {{ compra.cpf }}</small>
+                            </td>
+                            <td style="color: #555;">{{ compra.data_compra|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                {% if compra.comprovante %}
+                                    <a href="{{ compra.comprovante.url }}" target="_blank" class="link-comprovante">
+                                        📄 Visualizar Arquivo ↗
+                                    </a>
+                                {% else %}
+                                    <span style="color: #999; font-style: italic;">Não enviado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'aprovar_comprovante' compra.id %}" class="btn-action btn-approve"
+                                   onclick="return confirm('Confirmar o recebimento do PIX para o número {{ compra.numeros_alocados.first.numero }} da rifa {{ compra.rifa.titulo }}?');">
+                                    ✓ Confirmar Pago
+                                </a>
+                                <a href="{% url 'recusar_comprovante' compra.id %}" class="btn-action btn-reject"
+                                   onclick="return confirm('Deseja recusar o comprovante do número {{ compra.numeros_alocados.first.numero }}? O número voltará a ficar vago.');">
+                                    ✕ Recusar
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div style="background: #f8f9fa; padding: 45px; text-align: center; border-radius: 8px; border: 1px solid #eee;">
+                <p style="font-size: 1.6rem; color: #666; margin-bottom: 0;">👏 Não há comprovantes pendentes de validação no momento.</p>
+            </div>
+        {% endif %}
+    </main>
+</body>
+</html>
