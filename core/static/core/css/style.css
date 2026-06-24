@@ -125,14 +125,16 @@ img {
 
 .rifas-grid {
   display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
   grid-auto-rows: minmax(250px, 1fr);
+  padding: 20px;
 }
 
 .rifa-card {
   padding: 20px;
-  background-color: var(--cinza);
+  box-shadow: 5px 5px 20px;
+  background-color: #ddd;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
@@ -156,12 +158,14 @@ img {
 .rifa-card .titulo-rifa {
   font-size: 2.5rem;
   color: var(--verde-4);
+  width: 100%;
 }
 
 .rifa-card img {
   display: block;
-  max-width: 100%;
-  height: 300px;
+  width: 100%;
+  object-fit: cover;
+  object-position: center center;
 }
 
 
@@ -174,4 +178,20 @@ img {
   padding: 5px 10px;
   border-radius: 4px;
   align-self: stretch;
+}
+
+.situacao {
+  font-size: 2rem;
+}
+
+.btn-adquirir {
+  display: block;
+  color: var(--branco);
+  background-color: var(--verde-2);
+  margin-top: 20px;
+  border-radius: 4px;
+  font-size: 2rem;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 5px 10px;
 }

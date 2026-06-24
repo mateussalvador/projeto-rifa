@@ -2,19 +2,19 @@
 
 <div class="rifas-grid">
   {% for rifa in rifas %}
-    <div class="rifa-card" style="background: #fff; border: 1px solid #e9ecef; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.02); display: flex; flex-direction: column;">
+    <div class="rifa-card">
       
       <!-- Imagem de Capa da Rifa -->
       <div class="rifa-img-container" >
         {% if rifa.cover %}
-          <img src="{{ rifa.cover.url }}" alt="{{ rifa.titulo }}" style="width: 100%; height: 100%; object-fit: cover;">
+          <img src="{{ rifa.cover.url }}" alt="{{ rifa.titulo }}">
         {% else %}
-          <img src="{% static 'core/img/money-2.jpg' %}" alt="{{ rifa.titulo }}" style="width: 100%; height: 100%; object-fit: cover;">
+          <img src="{% static 'core/img/money-2.jpg' %}" alt="{{ rifa.titulo }}">
         {% endif %}
         
         <!-- Badge Dinâmico de Status por cima da Imagem -->
-        <span>
-          {% if rifa.finalizada %} 🔒 Encerrada {% else %} 🟢 Aberta {% endif %}
+        <span class="situacao">
+          Situação: {% if rifa.finalizada %} 🔒 Encerrada {% else %} 🟢 Aberta {% endif %}
         </span>
       </div>
 
@@ -37,10 +37,9 @@
           </div>
 
           <!-- Rodapé do Card: Preço e Ação -->
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
-            <span style="font-size: 1.8rem; font-weight: 700; color: #28a745;">R$ {{ rifa.valor }}</span>
-            <a href="{% url 'rifas' rifa.id %}" style="display: inline-block; background-color: #007bff; color: white; padding: 8px 16px; border-radius: 4px; font-weight: 600; text-decoration: none; font-size: 1.3rem; transition: background-color 0.2s;"
-               onmouseover="this.style.backgroundColor='#0056b3'" onmouseout="this.style.backgroundColor='#007bff'">
+          <div>
+            <span>R$ {{ rifa.valor }}</span>
+            <a class="btn-adquirir" href="{% url 'rifas' rifa.id %}">
               {% if rifa.finalizada %} Ver Resultado {% else %} Adquirir Cota {% endif %}
             </a>
           </div>
